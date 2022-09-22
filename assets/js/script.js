@@ -3,10 +3,11 @@ var searchBar = $('#search-bar');
 var inputEl = $('#simple-search');
 var searchListContainer = $('#search-list-container');
 var apiKey = '53072a375d6bf34bc2bde40e9812fcc1';
-var apiEndpoint = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=metric`
-var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`
+var oneDayApi = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=metric`
+var geoApiendpoint = `https://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`
+var fiveDayApi = `https://api.openweathermap.org/data/2.5/forecast?appid=${apiKey}&cnt=5&units=metric`
 var todayForecast = $('#today-forecast')
-
+var fiveDayContainer = $('#5-day-forecast')
 
 function searchCity(event) {
     event.preventDefault();
@@ -41,14 +42,32 @@ function geocodingApi(query) {
             var lat = data[0].lat
             var lon = data[0].lon
 
-            weatherApi(lat, lon)
+            weatherApi(lat, lon);
+            fiveDayWeatherApi(lat, lon);
 
         });
     inputEl.val("");
 }
 
 function weatherApi(lat, lon) {
-    fetch(apiEndpoint + `&lat=` + lat + '&lon=' + lon)
+    fetch(oneDayApi + `&lat=` + lat + '&lon=' + lon)
+        .then(
+            function (response) {
+                return response.json();
+            },
+            function (error) {
+                console.log(error.message);
+            }
+        )
+        .then(function (data) {
+
+            renderOneDay(data)
+            
+        });
+}
+
+function fiveDayWeatherApi(lat, lon) {
+    fetch(fiveDayApi + `&lat=` + lat + '&lon=' + lon)
         .then(
             function (response) {
                 return response.json();
@@ -60,7 +79,8 @@ function weatherApi(lat, lon) {
         .then(function (data) {
             console.log(data);
 
-            renderOneDay(data)
+            
+            
         });
 }
 
@@ -78,6 +98,25 @@ function renderOneDay(data) {
     todayForecast.append(`<p class="mb-4">Wind: ${data.wind.speed} KM/H</p>`)
     todayForecast.append(`<p class="mb-4">Humidity: ${data.main.humidity}%</p>`)
     // todayForecast.append(`<p class="mb-4">UV Index: ${data.wind.speed}</p>`)
+}
+
+function renderFiveDay(data) {
+
+    fiveDayContainer.html('')
+    fiveDayContainer.append('<h3 class="text-xl font-bold mb-8 col-span-10">5-Day Forecast:</h3>')
+
+    for (var i = 0; i < data.list.length; i++) {
+        var list = data.list[i]
+        var cardContainer = ('<div class="col-span-10 md:col-span-2 bg-indigo-400 text-white p-3 rounded-lg m-1">')
+        let date = moment().add(i + 1, 'days').format('DD MM YYYY')
+        cardContainer.append(`<p class="text-xl font-bold mb-4">${date}/p>`)
+        cardContainer.append(`<img src="http://openweathermap.org/img/wn/${list.weather[0].icon}@2x.png">`)
+        cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp}</p>`)
+        cardContainer.append(`<p class="mb-4">icon</p>`)
+        cardContainer.append(`<p class="mb-4">icon</p>`)
+        fiveDayContainer.append(cardContainer)
+    }
+
 }
 
 function storeSearchList() {
