@@ -61,9 +61,7 @@ function weatherApi(lat, lon) {
             }
         )
         .then(function (data) {
-
-            renderOneDay(data)
-            
+            renderOneDay(data)     
         });
 }
 
@@ -79,9 +77,7 @@ function fiveDayWeatherApi(lat, lon) {
         )
         .then(function (data) {
             console.log(data);
-
             renderFiveDay(data);
-            
         });
 }
 
@@ -108,13 +104,13 @@ function renderFiveDay(data) {
     for (var i = 0; i < data.list.length; i++) {
         var list = data.list[i]
         var cardContainer = $('<div class="col-span-10 md:col-span-2 bg-indigo-400 text-white p-3 rounded-lg m-1">');
-        let date = moment().add(i + 1, 'days').format('DD/MM/YYYY');
+        let date = moment().add(i + 1 , 'days').format('DD/MM/YYYY');
         fiveDayContainer.append(cardContainer);
         cardContainer.append(`<p class="text-xl font-bold mb-4">${date}</p>`);
         cardContainer.append(`<img src="http://openweathermap.org/img/wn/${list.weather[0].icon}@2x.png">`);
         cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp} °C</p>`);
         cardContainer.append(`<p class="mb-4">Wind: ${list.wind.speed}KM/H</p>`);
-        cardContainer.append(`<p class="mb-4">Humidity: ${list.main.humidity}</p>`);
+        cardContainer.append(`<p class="mb-4">Humidity: ${list.main.humidity}%</p>`);
     }
 
 }
