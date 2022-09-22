@@ -3,9 +3,9 @@ var searchBar = $('#search-bar');
 var inputEl = $('#simple-search');
 var searchListContainer = $('#search-list-container');
 var apiKey = '53072a375d6bf34bc2bde40e9812fcc1';
-var apiEndpoint = `https://api.openweathermap.org/data/3.0/onecall?appid=${apiKey}`
-var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`
-
+var apiEndpoint = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}`
+var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&units=metric&limit=1&q=`
+var todayForecast = $('#today-forecast')
 
 function geocodingApi(query) {
     fetch(geoApiendpoint + query)
@@ -18,14 +18,12 @@ function geocodingApi(query) {
             }
         )
         .then(function (data) {
-            console.log(data)
-            console.log(data[0].lat);
-            console.log(data[0].lon);
-
+            console.log(data);
             var lat = data[0].lat
             var lon = data[0].lon
 
             weatherApi(lat, lon)
+
         });
     inputEl.val("");
 }
@@ -41,16 +39,25 @@ function weatherApi(lat, lon) {
             }
         )
         .then(function (data) {
-            console.log(data)
-            console.log(data[0].lat);
-            console.log(data[0].lon);
+            console.log(data);
 
-            var lat = data[0].lat
-            var lon = data[0].lon
-
-            weatherApi(lat, lon)
+            renderOneDay(data)
         });
 }
+
+function renderOneDay(data) {
+
+    var todayDate = moment().format('dddd, MMM Do YYYY')
+    var icon = $(`<img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">`)
+    var cityName = $(`<h2 class="text-xl font-bold mb-8">${data.name} - ${todayDate} <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"></h2>`)
+    
+    todayForecast.append(cityName)
+    todayForecast.append(`<p class="mb-4">Temp: ${data.main.temp} C</p>`)
+    todayForecast.append(`<p class="mb-4">Wind: ${data.wind.speed} KM/H</p>`)
+    todayForecast.append(`<p class="mb-4">Humidity: ${data.main.humidity}%</p>`)
+    todayForecast.append(`<p class="mb-4">UV Index: ${data.wind.speed}</p>`)
+}
+
 
 function searchCity(event) {
     event.preventDefault();
@@ -79,8 +86,8 @@ function renderSearchList() {
     var recentTitle = $('<h2 class="text-center font-bold">');
     recentTitle.text("Recent Search").appendTo(searchListContainer);
 
-    //Code will run as long as the list or when it reaches 8 items whichever is less
-    for (var i = 0; i < searchList.length && i < 8; i++) {
+    //Code will run as long as the list or when it reaches 4 items whichever is less
+    for (var i = 0; i < searchList.length && i < 4; i++) {
         var search = searchList[i];
         var recentSearchButton = $('<button class="recent-search bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full">');
         //adding an event listener to the button so that they bring to the search page
@@ -95,6 +102,7 @@ function init() {
         searchList = recentSearchList;
     }
     renderSearchList();
+    geocodingApi('sydney');
 }
 
 
