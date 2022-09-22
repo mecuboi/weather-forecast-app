@@ -3,11 +3,30 @@ var searchBar = $('#search-bar');
 var inputEl = $('#simple-search');
 var searchListContainer = $('#search-list-container');
 var apiKey = '53072a375d6bf34bc2bde40e9812fcc1';
-var apiEndpoint = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}`
-var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&units=metric&limit=1&q=`
+var apiEndpoint = `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=metric`
+var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`
 var todayForecast = $('#today-forecast')
 
+
+function searchCity(event) {
+    event.preventDefault();
+    
+    var searchString = $(inputEl).val().trim();
+    //to add the search list to the front of the array
+    searchList.unshift(searchString);
+
+    geocodingApi(searchString)
+
+    inputEl.val("");
+
+
+    storeSearchList();
+    renderSearchList();
+}
+
+
 function geocodingApi(query) {
+    todayForecast.html('')
     fetch(geoApiendpoint + query)
         .then(
             function (response) {
@@ -48,31 +67,17 @@ function weatherApi(lat, lon) {
 function renderOneDay(data) {
 
     var todayDate = moment().format('dddd, MMM Do YYYY')
-    var icon = $(`<img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png">`)
-    var cityName = $(`<h2 class="text-xl font-bold mb-8">${data.name} - ${todayDate} <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"></h2>`)
+    var cityName = $(`<h2 class="text-xl font-bold mb-1">${data.name} - ${todayDate} <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"></h2>`)
+    var descriptionEl = data.weather[0].description
+    var description = descriptionEl.toUpperCase()
     
+
     todayForecast.append(cityName)
+    todayForecast.append(`<p class='mt-px mb-8'> ${description}`)
     todayForecast.append(`<p class="mb-4">Temp: ${data.main.temp} C</p>`)
     todayForecast.append(`<p class="mb-4">Wind: ${data.wind.speed} KM/H</p>`)
     todayForecast.append(`<p class="mb-4">Humidity: ${data.main.humidity}%</p>`)
-    todayForecast.append(`<p class="mb-4">UV Index: ${data.wind.speed}</p>`)
-}
-
-
-function searchCity(event) {
-    event.preventDefault();
-
-    var searchString = $(inputEl).val().trim();
-    //to add the search list to the front of the array
-    searchList.unshift(searchString);
-
-    geocodingApi(searchString)
-
-    inputEl.val("");
-
-
-    storeSearchList();
-    renderSearchList();
+    // todayForecast.append(`<p class="mb-4">UV Index: ${data.wind.speed}</p>`)
 }
 
 function storeSearchList() {
@@ -87,11 +92,19 @@ function renderSearchList() {
     recentTitle.text("Recent Search").appendTo(searchListContainer);
 
     //Code will run as long as the list or when it reaches 4 items whichever is less
-    for (var i = 0; i < searchList.length && i < 4; i++) {
+    for (var i = 0; i < searchList.length && i < 6; i++) {
         var search = searchList[i];
         var recentSearchButton = $('<button class="recent-search bg-indigo-400 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full">');
         //adding an event listener to the button so that they bring to the search page
         recentSearchButton.text(search).appendTo(searchListContainer);
+
+        $(recentSearchButton).on("click", function (event) {
+            searchItem = $(event.target).text();
+            console.log(searchItem);
+
+            geocodingApi(searchItem);
+            
+          });
     }
 }
 
@@ -107,4 +120,7 @@ function init() {
 
 
 searchBar.on("submit", searchCity);
+
+
+
 init();
