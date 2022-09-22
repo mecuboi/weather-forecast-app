@@ -21,6 +21,8 @@ I have learned how to utilise tailwind, jQuery and openweather API. Merging thos
 
 ## Usage
 
+Site is live at: https://mecuboi.github.io/weather-forecast-app/ 
+
 This is the homescreen of the weather app:
 
 ![Homepage Screenshot](assets/images/screenshot.png)
