@@ -27,7 +27,8 @@ function searchCity(event) {
 
 
 function geocodingApi(query) {
-    todayForecast.html('')
+    todayForecast.html('');
+    fiveDayContainer.html('');
     fetch(geoApiendpoint + query)
         .then(
             function (response) {
@@ -94,7 +95,7 @@ function renderOneDay(data) {
 
     todayForecast.append(cityName)
     todayForecast.append(`<p class='mt-px mb-8'> ${description}`)
-    todayForecast.append(`<p class="mb-4">Temp: ${data.main.temp} C</p>`)
+    todayForecast.append(`<p class="mb-4">Temp: ${data.main.temp} °C</p>`)
     todayForecast.append(`<p class="mb-4">Wind: ${data.wind.speed} KM/H</p>`)
     todayForecast.append(`<p class="mb-4">Humidity: ${data.main.humidity}%</p>`)
     // todayForecast.append(`<p class="mb-4">UV Index: ${data.wind.speed}</p>`)
@@ -102,7 +103,6 @@ function renderOneDay(data) {
 
 function renderFiveDay(data) {
 
-    fiveDayContainer.html(' ')
     fiveDayContainer.append('<h3 class="text-xl font-bold mb-8 col-span-10">5-Day Forecast:</h3>')
 
     for (var i = 0; i < data.list.length; i++) {
@@ -112,7 +112,7 @@ function renderFiveDay(data) {
         fiveDayContainer.append(cardContainer);
         cardContainer.append(`<p class="text-xl font-bold mb-4">${date}</p>`);
         cardContainer.append(`<img src="http://openweathermap.org/img/wn/${list.weather[0].icon}@2x.png">`);
-        cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp}</p>`);
+        cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp} °C</p>`);
         cardContainer.append(`<p class="mb-4">Wind: ${list.wind.speed}KM/H</p>`);
         cardContainer.append(`<p class="mb-4">Humidity: ${list.main.humidity}</p>`);
     }
