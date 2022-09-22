@@ -79,14 +79,14 @@ function fiveDayWeatherApi(lat, lon) {
         .then(function (data) {
             console.log(data);
 
-            
+            renderFiveDay(data);
             
         });
 }
 
 function renderOneDay(data) {
 
-    var todayDate = moment().format('dddd, MMM Do YYYY')
+    var todayDate = moment().format('dddd, Do MMMM YYYY')
     var cityName = $(`<h2 class="text-xl font-bold mb-1">${data.name} - ${todayDate} <img src="http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png"></h2>`)
     var descriptionEl = data.weather[0].description
     var description = descriptionEl.toUpperCase()
@@ -102,19 +102,19 @@ function renderOneDay(data) {
 
 function renderFiveDay(data) {
 
-    fiveDayContainer.html('')
+    fiveDayContainer.html(' ')
     fiveDayContainer.append('<h3 class="text-xl font-bold mb-8 col-span-10">5-Day Forecast:</h3>')
 
     for (var i = 0; i < data.list.length; i++) {
         var list = data.list[i]
-        var cardContainer = ('<div class="col-span-10 md:col-span-2 bg-indigo-400 text-white p-3 rounded-lg m-1">')
-        let date = moment().add(i + 1, 'days').format('DD MM YYYY')
-        cardContainer.append(`<p class="text-xl font-bold mb-4">${date}/p>`)
-        cardContainer.append(`<img src="http://openweathermap.org/img/wn/${list.weather[0].icon}@2x.png">`)
-        cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp}</p>`)
-        cardContainer.append(`<p class="mb-4">icon</p>`)
-        cardContainer.append(`<p class="mb-4">icon</p>`)
-        fiveDayContainer.append(cardContainer)
+        var cardContainer = $('<div class="col-span-10 md:col-span-2 bg-indigo-400 text-white p-3 rounded-lg m-1">');
+        let date = moment().add(i + 1, 'days').format('DD/MM/YYYY');
+        fiveDayContainer.append(cardContainer);
+        cardContainer.append(`<p class="text-xl font-bold mb-4">${date}</p>`);
+        cardContainer.append(`<img src="http://openweathermap.org/img/wn/${list.weather[0].icon}@2x.png">`);
+        cardContainer.append(`<p class="mb-4">Temp: ${list.main.temp}</p>`);
+        cardContainer.append(`<p class="mb-4">Wind: ${list.wind.speed}KM/H</p>`);
+        cardContainer.append(`<p class="mb-4">Humidity: ${list.main.humidity}</p>`);
     }
 
 }
