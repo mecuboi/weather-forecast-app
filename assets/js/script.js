@@ -2,6 +2,55 @@ var searchList = [];
 var searchBar = $('#search-bar');
 var inputEl = $('#simple-search');
 var searchListContainer = $('#search-list-container');
+var apiKey = '53072a375d6bf34bc2bde40e9812fcc1';
+var apiEndpoint = `https://api.openweathermap.org/data/3.0/onecall?appid=${apiKey}`
+var geoApiendpoint = `http://api.openweathermap.org/geo/1.0/direct?appid=${apiKey}&limit=1&q=`
+
+
+function geocodingApi(query) {
+    fetch(geoApiendpoint + query)
+        .then(
+            function (response) {
+                return response.json();
+            },
+            function (error) {
+                console.log(error.message);
+            }
+        )
+        .then(function (data) {
+            console.log(data)
+            console.log(data[0].lat);
+            console.log(data[0].lon);
+
+            var lat = data[0].lat
+            var lon = data[0].lon
+
+            weatherApi(lat, lon)
+        });
+    inputEl.val("");
+}
+
+function weatherApi(lat, lon) {
+    fetch(apiEndpoint + `&lat=` + lat + '&lon=' + lon)
+        .then(
+            function (response) {
+                return response.json();
+            },
+            function (error) {
+                console.log(error.message);
+            }
+        )
+        .then(function (data) {
+            console.log(data)
+            console.log(data[0].lat);
+            console.log(data[0].lon);
+
+            var lat = data[0].lat
+            var lon = data[0].lon
+
+            weatherApi(lat, lon)
+        });
+}
 
 function searchCity(event) {
     event.preventDefault();
@@ -9,7 +58,11 @@ function searchCity(event) {
     var searchString = $(inputEl).val().trim();
     //to add the search list to the front of the array
     searchList.unshift(searchString);
+
+    geocodingApi(searchString)
+
     inputEl.val("");
+
 
     storeSearchList();
     renderSearchList();
@@ -43,7 +96,6 @@ function init() {
     }
     renderSearchList();
 }
-
 
 
 searchBar.on("submit", searchCity);
